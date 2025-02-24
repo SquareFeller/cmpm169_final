@@ -20,5 +20,3 @@ function draw() {
     }
   }
 }
-
- //SECTION TEAM: Lorraine Torres, Ashley Knapp, and Kellum Inglin
