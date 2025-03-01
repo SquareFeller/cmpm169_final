@@ -1,4 +1,4 @@
-//Citation: Help from ChatGPT to help me modify, debugging, and understanding the code
+//Citation: Help from ChatGPT and Deepseek to help me modify, debugging, and understanding the code
 
 let button, wakeUpButton;
 let timerText = "8:00"; // Initial time
