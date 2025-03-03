@@ -2,7 +2,7 @@
 
 let currentSketch = 1;
 
-//for sketch 1
+//for sketch 1 ________________
 let button, wakeUpButton;
 let timerText = "8:00"; // Initial time
 let moveCount = 0;
@@ -12,10 +12,23 @@ let initialX, initialY; // Store initial position
 let textOpacity = 255; // Text opacity
 let newCanvasX;
 let newCanvasY;
-// for sketch 2
 
+//for sketch 2 _______________
+let busSound;
+let volume = 0;
+let increasing = true;
+let thoughtBubbles = [];
+let scene = 0;
+let correctBubble;
+let fadeAlpha = 0; // Controls the fade effect
+let isFading = false; // Indicates if the fade effect is active
 
-//for sketch 3
+// Array of predefined texts for the bubbles
+let bubbleTexts = [
+  "Go back?", "Oh....", "Bad day", "Hmm...", "No way...", "No!", "Why?", "How?", "What?"
+];
+
+//for sketch 3 ________________
 let dots = [];
 let numDots = 3;
 let dotSpeed = 1.5;
@@ -23,20 +36,32 @@ let squareSize = 40;
 let squareX, squareY;
 let dotsInsideSquare = [];
 
-//for sketch 4 
+//for sketch 4 ________________
 let song;
 let analyzer;
 let mouse_count = 0;
+
+//for sketch 5 ________________
+
+// PRE LOAD _____________________________________________
+function preload() {
+  // for sketch 2
+    soundFormats('mp3', 'wav');
+    busSound = loadSound('bus_sound.mp3'); // Replace with actual bus sound file
+}
+
 // SET UP _______________________________________________
 function setup() {
-  if (currentSketch === 1) {
+  if (currentSketch === 1){
     // Sketch 1
+    console.log("This is sketch 1");
+
     //createCanvas(400, 400);
-  cnv=createCanvas(600,400);
-  // print(img.width,img.height);
-  newCanvasX = (windowWidth - 600)/2;
-  newCanvasY = (windowHeight- 400)/2;
-  cnv.position(newCanvasX,newCanvasY)
+    cnv=createCanvas(600,400);
+    // print(img.width,img.height);
+    newCanvasX = (windowWidth - 600)/2;
+    newCanvasY = (windowHeight- 400)/2;
+    cnv.position(newCanvasX,newCanvasY);
     
     button = createButton('Snooze');
     styleButton(button);
@@ -60,15 +85,50 @@ function setup() {
     
     wakeUpButton.mousePressed(() => {
     console.log("Wake Up button clicked!");
-    currentSketch = 3;
+    currentSketch = 2;
     //remove button
     wakeUpButton.remove();
     button.remove();
     setup();
     });
-  }
-  else if (currentSketch === 3) {
+
+  } else if (currentSketch === 2){
+    //Sketch 2
+    console.log("This is sketch 2");
+
+    //createCanvas(600, 400);
+    cnv=createCanvas(600,400);
+    // print(img.width,img.height);
+    newCanvasX = (windowWidth - 600)/2;
+    newCanvasY = (windowHeight- 400)/2;
+    cnv.position(newCanvasX,newCanvasY);
+    
+    busSound.loop();
+    busSound.setVolume(0);
+
+    // Create bubbles with even horizontal distribution
+    let cols = 7; // Number of columns for the grid
+    let spacingX = width / (cols + 1); // Horizontal spacing
+
+    for (let i = 0; i < cols; i++) {
+      let x = spacingX * (i + 1); // Calculate x position
+      let y = height; // Start at the bottom of the canvas
+
+      // Create two bubbles per column
+      for (let j = 0; j < 2; j++) {
+        let randomText = random(bubbleTexts); // Pick a random text from the array
+        let offsetY = j * 20; // Add a small vertical offset for the second bubble
+        thoughtBubbles.push(new ThoughtBubble(x, y + offsetY, randomText));
+      }
+    }
+
+    // Randomly select one bubble as the correct one
+    correctBubble = random(thoughtBubbles);
+    correctBubble.text = "Click Me!"; // Set the correct bubble's text
+
+  } else if (currentSketch === 3){
     // Sketch 3
+    console.log("This is sketch 3");
     createCanvas(600, 400);
 
   // Create initial positions of dots
@@ -86,8 +146,17 @@ function setup() {
   // Center the square
   squareX = width / 2 - squareSize / 2;
   squareY = height / 2 - squareSize / 2;
+  } else if (currentSketch === 4){
+    // Sketch 4
+    console.log("This is sketch 4");
+  } else if (currentSketch === 5){
+    // Sketch 5
+    console.log("This is sketch 5");
+  } else {
+    console.log("error: currentSketch UNKNOWN");
   }
 }
+
 // DRAW __________________________________________________________
 function draw() {
   if (currentSketch == 1){
@@ -98,8 +167,33 @@ function draw() {
     textAlign(CENTER, CENTER);
     fill(255, 255, 255, textOpacity); // Control opacity
     text(timerText, width / 2, height / 2 - 100);
+  } else if (currentSketch == 2){
+    //Sketch 2
+    background(0); // Set background to black
+
+  if (scene === 0) {
+    manageBusSound();
+  } else if (scene === 1) {
+    for (let bubble of thoughtBubbles) {
+      bubble.update();
+      bubble.display();
+    }
+  } else if (scene === 2) {
+    // Fade to white effect
+    if (isFading) {
+      fadeAlpha += 2; // Increase the fade level
+      if (fadeAlpha >= 255) {
+        fadeAlpha = 255; // Clamp the fade level to 255
+        isFading = false; // Stop the fade effect
+        // Optionally, transition to another scene or perform other actions here
+      }
+    }
+    fill(255, fadeAlpha); // White with increasing alpha
+    noStroke();
+    rect(0, 0, width, height); // Cover the entire canvas
   }
-  else if (currentSketch == 3){
+
+  } else if (currentSketch == 3){
     background("lightgrey");
 
   // Loop through all the dots and update their positions
@@ -128,35 +222,68 @@ function draw() {
   fill(0, 0, 0, 0); // Transparent fill
   stroke(0); // Black outline
   rect(squareX, squareY, squareSize, squareSize);
+  } else if (currentSketch == 4){
+    //Sketch 4
+  } else if (currentSketch == 5){
+    //Sketch 5
+  } else {
+    console.log("error: currentSketch UNKNOWN");
   }
 }
 
 // MOUSE PRESS __________________________________________________
 function mousePressed() {
-  if (currentSketch == 3){
+  if (currentSketch === 1) {
+    // Sketch 1
+  } else if (currentSketch === 2) {
+    // Sketch 2
+    if (scene === 1) {
+      for (let i = 0; i < thoughtBubbles.length; i++) {
+        let bubble = thoughtBubbles[i];
+        if (bubble.isHovered()) {
+          if (bubble === correctBubble) {
+            scene = 2;
+            isFading = true; // Start the fade effect
+            console.log("correct button");
+          }
+          thoughtBubbles.splice(i, 1); // Remove the clicked bubble
+          break;
+        }
+      }
+    } 
+  } else if (currentSketch === 3) {
+    // Sketch 3
     // Check if the mouse click is inside the square
-  if (
-    mouseX > squareX &&
-    mouseX < squareX + squareSize &&
-    mouseY > squareY &&
-    mouseY < squareY + squareSize
-  ) {
-    // Loop through all the dots to see if any are inside the square
-    for (let i = 0; i < dots.length; i++) {
-      if (
-        dots[i].x > squareX &&
-        dots[i].x < squareX + squareSize &&
-        dots[i].y > squareY &&
-        dots[i].y < squareY + squareSize
-      ) {
-        dotsInsideSquare[i] = true; // Mark this dot as inside the square after the click
+    if (
+      mouseX > squareX &&
+      mouseX < squareX + squareSize &&
+      mouseY > squareY &&
+      mouseY < squareY + squareSize
+    ) {
+      // Loop through all the dots to see if any are inside the square
+      for (let i = 0; i < dots.length; i++) {
+        if (
+          dots[i].x > squareX &&
+          dots[i].x < squareX + squareSize &&
+          dots[i].y > squareY &&
+          dots[i].y < squareY + squareSize
+        ) {
+          dotsInsideSquare[i] = true; // Mark this dot as inside the square after the click
+        }
       }
     }
-  }
+  } else if (currentSketch === 4) {
+    // Sketch 4
+  } else if (currentSketch === 5) {
+    // Sketch 5
+  } else {
+    // Not Sketch 1-5
   }
 }
 
 // HELPER FUNCTIONS _______________________________________________
+
+// For sketch 1 ___________________________________
 function styleButton(btn) {
     btn.style('font-size', '22px');
     btn.style('padding', '15px 30px');
@@ -292,3 +419,54 @@ function fadeInBoth() {
     }
 }
 
+// For sketch 2 ___________________________________
+function manageBusSound() {
+  if (increasing) {
+    volume += 0.01;
+    if (volume >= 1) increasing = false;
+  } else {
+    volume -= 0.01;
+    if (volume <= 0) {
+      busSound.stop();
+      scene = 1;
+    }
+  }
+  busSound.setVolume(constrain(volume, 0, 1));
+}
+
+class ThoughtBubble {
+  constructor(x, y, text) {
+    this.size = random(80, 100); // Random size between 80 and 100
+    this.x = x;
+    this.y = y;
+    this.text = text;
+    this.speed = random(1, 3);
+  }
+
+  update() {
+    this.y -= this.speed; // Move the bubble upward
+    if (this.y < -this.size) {
+      this.y = height; // Reset to the bottom if the bubble goes off the top
+    }
+  }
+
+  display() {
+    fill(255); // White fill for bubbles
+    stroke(200); // Light gray stroke for bubbles
+    ellipse(this.x, this.y, this.size, this.size); // Use the random size
+
+    // Adjust text size based on bubble size
+    let textSizeValue = map(this.size, 80, 100, 14, 18); // Map size to text size
+    textSize(textSizeValue);
+
+    fill(0); // Black text for visibility
+    noStroke();
+    textAlign(CENTER, CENTER);
+    text(this.text, this.x, this.y);
+  }
+
+  isHovered() {
+    // Check if the mouse is within the bubble's radius
+    return dist(mouseX, mouseY, this.x, this.y) < this.size / 2;
+  }
+}
