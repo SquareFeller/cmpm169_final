@@ -36,6 +36,9 @@ let squareSize = 40;
 let squareX, squareY;
 let dotsInsideSquare = [];
 
+let startTime;
+let sceneDuration = 15000; // 15 seconds in milliseconds
+
 //for sketch 4 ________________
 let song;
 let analyzer;
@@ -52,7 +55,7 @@ function preload() {
 
 // SET UP _______________________________________________
 function setup() {
-  if (currentSketch === 1){
+if (currentSketch === 1){
     // Sketch 1
     console.log("This is sketch 1");
 
@@ -102,7 +105,7 @@ function setup() {
     newCanvasX = (windowWidth - 600)/2;
     newCanvasY = (windowHeight- 400)/2;
     cnv.position(newCanvasX,newCanvasY);
-    
+
     busSound.loop();
     busSound.setVolume(0);
 
@@ -130,6 +133,9 @@ function setup() {
     // Sketch 3
     console.log("This is sketch 3");
     createCanvas(600, 400);
+
+    // Initialize the timer
+    startTime = millis();
 
   // Create initial positions of dots
   for (let i = 0; i < numDots; i++) {
@@ -186,6 +192,8 @@ function draw() {
         fadeAlpha = 255; // Clamp the fade level to 255
         isFading = false; // Stop the fade effect
         // Optionally, transition to another scene or perform other actions here
+        currentSketch = 3;
+        setup();
       }
     }
     fill(255, fadeAlpha); // White with increasing alpha
@@ -194,11 +202,21 @@ function draw() {
   }
 
   } else if (currentSketch == 3){
+    //Sketch 3
+
+    // Check if 15 seconds have passed
+    let elapsedTime = millis() - startTime;
+    if (elapsedTime >= sceneDuration) {
+      // Trigger the scene change (this can be replaced with a new scene)
+      currentSketch = 4;
+      setup();
+    }
+
     background("lightgrey");
 
-  // Loop through all the dots and update their positions
-  for (let i = 0; i < dots.length; i++) {
-    dots[i].x += dotSpeed;
+    // Loop through all the dots and update their positions
+    for (let i = 0; i < dots.length; i++) {
+      dots[i].x += dotSpeed;
 
     // If the dot moves off the canvas, reset its position to the left side
     if (dots[i].x > width) {
@@ -222,6 +240,7 @@ function draw() {
   fill(0, 0, 0, 0); // Transparent fill
   stroke(0); // Black outline
   rect(squareX, squareY, squareSize, squareSize);
+
   } else if (currentSketch == 4){
     //Sketch 4
   } else if (currentSketch == 5){
