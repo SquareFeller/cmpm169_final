@@ -45,12 +45,21 @@ let analyzer;
 let mouse_count = 0;
 
 //for sketch 5 ________________
+let drops = []; // Array to store raindrops
+let ripples = []; // Array to store ripple effects
+let flash = false;
+let flashTimer = 0;
+let flashAlpha = 0;
+let blackout = 0; // Smooth transition variable (0 to 255 for fade effect)
+let scrollProgress = 0; // Track scroll progress for smooth transition
+let rippleTimer = 0; // Timer to control random ripple generation
 
 // PRE LOAD _____________________________________________
 function preload() {
   // for sketch 2
     soundFormats('mp3', 'wav');
     busSound = loadSound('bus_sound.mp3'); // Replace with actual bus sound file
+    song = loadSound('105265__carminooch__neighbors(louder).mp3');
 }
 
 // SET UP _______________________________________________
@@ -155,9 +164,28 @@ if (currentSketch === 1){
   } else if (currentSketch === 4){
     // Sketch 4
     console.log("This is sketch 4");
+
+    canv = createCanvas(400, 400);
+    song.loop();
+    song.setVolume(0.3);
+    song.play();
+    fft = new p5.FFT(0.9);
+    canv.mouseOut(outmsg);
+
   } else if (currentSketch === 5){
     // Sketch 5
     console.log("This is sketch 5");
+
+    //createCanvas(windowWidth, windowHeight);
+    cnv=createCanvas(600,400);
+    // print(img.width,img.height);
+    newCanvasX = (windowWidth - 600)/2;
+    newCanvasY = (windowHeight- 400)/2;
+    cnv.position(newCanvasX,newCanvasY);
+    
+    for (let i = 0; i < 100; i++) { // Create 100 raindrops
+      drops.push(new RainDrop());
+    }
   } else {
     console.log("error: currentSketch UNKNOWN");
   }
@@ -243,8 +271,84 @@ function draw() {
 
   } else if (currentSketch == 4){
     //Sketch 4
+    background(10);
+    let spectrum = fft.analyze();
+    stroke(255,0,0);
+    fill(255, 0, 0);
+  
+    for (let i = 0; i < spectrum.length; i++) {
+      let amp = spectrum[i];
+      let y = map(amp, 0, 256, height, 0);
+      line(i, height, i, y);
+    }
+    
+     if(mouseY > height/2){
+         console.log("vol up");
+         song.setVolume(1.25);
+       fft.smooth(0.01);
+        
+       }else{
+         console.log("vol reset");
+         song.setVolume(0.3);
+         fft.smooth(0.9);
+       }
+
   } else if (currentSketch == 5){
     //Sketch 5
+    background(0);
+  
+    // Always update raindrops, but only show them if scroll isn't complete
+    for (let drop of drops) {
+      drop.fall();
+      if (scrollProgress < 1) {
+        drop.show();
+      }
+    }
+
+    // Draw and update ripples
+    for (let i = ripples.length - 1; i >= 0; i--) {
+      ripples[i].expand();
+      ripples[i].show();
+      if (ripples[i].alpha <= 0) {
+        ripples.splice(i, 1); // Remove faded ripples
+      }
+    }
+
+    // Randomly generate ripples on the blank canvas
+    if (scrollProgress >= 1 && random(1) < 0.02) { // Adjust probability for ripple generation
+      let x = random(width);
+      let y = random(height);
+      ripples.push(new Ripple(x, y));
+      //console.log("Random ripple created at:", x, y); // Debugging
+    }
+
+    // Handle lightning effect with fade in/out
+    if (flash) {
+      flashAlpha = lerp(flashAlpha, 255, 0.1);
+    } else {
+      flashAlpha = lerp(flashAlpha, 0, 0.05);
+    }
+    fill(255, flashAlpha);
+    rect(0, 0, width, height);
+
+    // Random chance of lightning (reduced frequency)
+    if (!flash && random(1) < 0.005) { // Lower probability for less frequent lightning
+      flash = true;
+      flashTimer = int(random(3, 8)); // Duration of flash effect
+    }
+
+    // Stop flash effect after timer expires
+    if (flashTimer > 0) {
+      flashTimer--;
+    } else {
+      flash = false;
+    }
+    
+    // Apply blackout fade effect based on scrollProgress
+    if (scrollProgress < 1) {
+      fill(0, scrollProgress * 255);
+      rect(0, 0, width, height);
+    }
   } else {
     console.log("error: currentSketch UNKNOWN");
   }
@@ -488,4 +592,71 @@ class ThoughtBubble {
     // Check if the mouse is within the bubble's radius
     return dist(mouseX, mouseY, this.x, this.y) < this.size / 2;
   }
+}
+
+// For sketch 4 ____________________________________
+function outmsg(){
+  console.log("mouse is out");
+  mouse_count++;
+  if(mouse_count == 5){
+    console.log("go to next scene");
+    currentSketch = 5;
+    song.stop();
+    setup();
+  }
+}
+
+// For sketch 5 ____________________________________
+class RainDrop {
+  constructor() {
+    this.x = random(width);
+    this.y = random(-height, 0);
+    this.z = random(2, 8);
+    this.len = map(this.z, 2, 8, 10, 20);
+    this.yspeed = map(this.z, 2, 8, 2, 10);
+  }
+
+  fall() {
+    this.y += this.yspeed;
+    let grav = map(this.z, 2, 8, 0.02, 0.1);
+    this.yspeed += grav;
+
+    if (this.y > height) {
+      if (scrollProgress >= 0.99) { // Loosen the condition
+      }
+      this.y = random(-20, 0);
+      this.yspeed = map(this.z, 2, 8, 2, 10);
+    }
+  }
+
+  show() {
+    stroke(255);
+    strokeWeight(map(this.z, 2, 8, 1, 2));
+    line(this.x, this.y, this.x, this.y + this.len);
+  }
+}
+
+class Ripple {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.radius = 5;
+    this.alpha = 255;
+  }
+
+  expand() {
+    this.radius += 2;
+    this.alpha -= 5;
+  }
+
+  show() {
+    noFill();
+    stroke(255, this.alpha);
+    ellipse(this.x, this.y, this.radius * 2);
+  }
+}
+
+function mouseWheel(event) {
+  scrollProgress = constrain(scrollProgress + event.delta * 0.001, 0, 1); // Smooth scroll effect
+  console.log(scrollProgress);
 }
