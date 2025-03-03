@@ -10,7 +10,8 @@ let maxMoves = 5;
 let canMove = true; // Cooldown control
 let initialX, initialY; // Store initial position
 let textOpacity = 255; // Text opacity
-
+let newCanvasX;
+let newCanvasY;
 // for sketch 2
 
 
@@ -22,19 +23,27 @@ let squareSize = 40;
 let squareX, squareY;
 let dotsInsideSquare = [];
 
-
+//for sketch 4 
+let song;
+let analyzer;
+let mouse_count = 0;
 // SET UP _______________________________________________
 function setup() {
   if (currentSketch === 1) {
     // Sketch 1
-    createCanvas(400, 400);
+    //createCanvas(400, 400);
+  cnv=createCanvas(600,400);
+  // print(img.width,img.height);
+  newCanvasX = (windowWidth - 600)/2;
+  newCanvasY = (windowHeight- 400)/2;
+  cnv.position(newCanvasX,newCanvasY)
     
     button = createButton('Snooze');
     styleButton(button);
     
     // **Set button position initially**
-    let startX = width / 2 - 70;
-    let startY = height / 2;
+    let startX = (width + newCanvasX) / 2 - 70;
+    let startY = (height + newCanvasY) / 2;
     button.position(startX, startY);
 
     // **Store initial position**
@@ -175,8 +184,8 @@ function positionButtonRandomly() {
     let buttonWidth = 130;
     let buttonHeight = 40;
 
-    let x = random(10, width - buttonWidth - 10);
-    let y = random(height / 2, height - buttonHeight - 20);
+    let x = random(windowWidth - width, width + newCanvasX - buttonWidth - 10);
+    let y = random(height / 2, height + newCanvasY- buttonHeight - 20);
 
     button.position(x, y);
 }
