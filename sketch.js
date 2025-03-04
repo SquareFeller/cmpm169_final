@@ -79,7 +79,7 @@ if (currentSketch === 1){
     styleButton(button);
     
     // **Set button position initially**
-    let startX = (width + newCanvasX) / 2 - 70;
+    let startX = (width + newCanvasX) / 2; //- 70;
     let startY = (height + newCanvasY) / 2;
     button.position(startX, startY);
 
@@ -141,7 +141,12 @@ if (currentSketch === 1){
   } else if (currentSketch === 3){
     // Sketch 3
     console.log("This is sketch 3");
-    createCanvas(600, 400);
+     //createCanvas(windowWidth, windowHeight);
+     cnv=createCanvas(600,400);
+     // print(img.width,img.height);
+     newCanvasX = (windowWidth - 600)/2;
+     newCanvasY = (windowHeight- 400)/2;
+     cnv.position(newCanvasX,newCanvasY);
 
     // Initialize the timer
     startTime = millis();
@@ -164,13 +169,17 @@ if (currentSketch === 1){
   } else if (currentSketch === 4){
     // Sketch 4
     console.log("This is sketch 4");
-
-    canv = createCanvas(400, 400);
+    //createCanvas(windowWidth, windowHeight);
+    cnv=createCanvas(600,400);
+     // print(img.width,img.height);
+     newCanvasX = (windowWidth - 600)/2;
+     newCanvasY = (windowHeight- 400)/2;
+     cnv.position(newCanvasX,newCanvasY);
     song.loop();
     song.setVolume(0.3);
     song.play();
     fft = new p5.FFT(0.9);
-    canv.mouseOut(outmsg);
+    cnv.mouseOut(outmsg);
 
   } else if (currentSketch === 5){
     // Sketch 5
@@ -598,7 +607,7 @@ class ThoughtBubble {
 function outmsg(){
   console.log("mouse is out");
   mouse_count++;
-  if(mouse_count == 5){
+  if(mouse_count == 4){
     console.log("go to next scene");
     currentSketch = 5;
     song.stop();
