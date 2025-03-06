@@ -64,6 +64,10 @@ function preload() {
     soundFormats('mp3', 'wav');
     busSound = loadSound('bus_sound.mp3'); // Replace with actual bus sound file
     song = loadSound('105265__carminooch__neighbors(louder).mp3');
+    alarmSound = loadSound('alarm-clock.mp3');
+    thunderSound = loadSound('thunder.mp3');
+    officeAmbience = loadSound('office-ambience.mp3');
+    officeStampSound = loadSound('office-stamp.mp3');
 }
 
 // SET UP _______________________________________________
