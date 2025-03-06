@@ -287,7 +287,7 @@ function draw() {
     // If the dot is inside the square and the user clicked, change its color to light grey
     if (dotsInsideSquare[i]) {
       dots[i].color = "lightgrey";
-      officeStampSound.play();
+      //officeStampSound.play();
     }
 
     // Draw the dot
