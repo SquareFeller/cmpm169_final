@@ -196,7 +196,7 @@ if (currentSketch === 1){
     console.log("This is sketch 5");
 
     //createCanvas(windowWidth, windowHeight);
-    w+=55;
+    w+=105;
     h += 55;
     cnv=createCanvas(w,h);
     // print(img.width,img.height);
