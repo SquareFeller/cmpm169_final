@@ -58,6 +58,12 @@ let rippleTimer = 0; // Timer to control random ripple generation
 let w = 600;
 let h = 400;
 
+//sounds
+let alarmSound;
+let thunderSound;
+let officeAmbience;
+let officeStampSound;
+
 // PRE LOAD _____________________________________________
 function preload() {
   // for sketch 2
@@ -281,6 +287,7 @@ function draw() {
     // If the dot is inside the square and the user clicked, change its color to light grey
     if (dotsInsideSquare[i]) {
       dots[i].color = "lightgrey";
+      officeStampSound.play();
     }
 
     // Draw the dot
