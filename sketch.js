@@ -54,6 +54,10 @@ let blackout = 0; // Smooth transition variable (0 to 255 for fade effect)
 let scrollProgress = 0; // Track scroll progress for smooth transition
 let rippleTimer = 0; // Timer to control random ripple generation
 
+//width & height 
+let w = 600;
+let h = 400;
+
 // PRE LOAD _____________________________________________
 function preload() {
   // for sketch 2
@@ -67,12 +71,11 @@ function setup() {
 if (currentSketch === 1){
     // Sketch 1
     console.log("This is sketch 1");
-
     //createCanvas(400, 400);
-    cnv=createCanvas(600,400);
+    cnv=createCanvas(w,h);
     // print(img.width,img.height);
-    newCanvasX = (windowWidth - 600)/2;
-    newCanvasY = (windowHeight- 400)/2;
+    newCanvasX = (windowWidth - w)/2;
+    newCanvasY = (windowHeight- h)/2;
     cnv.position(newCanvasX,newCanvasY);
     
     button = createButton('Snooze');
@@ -108,11 +111,14 @@ if (currentSketch === 1){
     //Sketch 2
     console.log("This is sketch 2");
 
+    w+=55;
+    h += 55;
+
     //createCanvas(600, 400);
-    cnv=createCanvas(600,400);
+    cnv=createCanvas(w,h);
     // print(img.width,img.height);
-    newCanvasX = (windowWidth - 600)/2;
-    newCanvasY = (windowHeight- 400)/2;
+    newCanvasX = (windowWidth - w)/2;
+    newCanvasY = (windowHeight- h)/2;
     cnv.position(newCanvasX,newCanvasY);
 
     busSound.loop();
@@ -141,11 +147,13 @@ if (currentSketch === 1){
   } else if (currentSketch === 3){
     // Sketch 3
     console.log("This is sketch 3");
+    w+=55;
+    h += 55;
      //createCanvas(windowWidth, windowHeight);
-     cnv=createCanvas(600,400);
+     cnv=createCanvas(w,h);
      // print(img.width,img.height);
-     newCanvasX = (windowWidth - 600)/2;
-     newCanvasY = (windowHeight- 400)/2;
+     newCanvasX = (windowWidth - w)/2;
+     newCanvasY = (windowHeight- h)/2;
      cnv.position(newCanvasX,newCanvasY);
 
     // Initialize the timer
@@ -170,10 +178,12 @@ if (currentSketch === 1){
     // Sketch 4
     console.log("This is sketch 4");
     //createCanvas(windowWidth, windowHeight);
-    cnv=createCanvas(600,400);
+    w+=55;
+    h += 55;
+    cnv=createCanvas(w,h);
      // print(img.width,img.height);
-     newCanvasX = (windowWidth - 600)/2;
-     newCanvasY = (windowHeight- 400)/2;
+     newCanvasX = (windowWidth - w)/2;
+     newCanvasY = (windowHeight- h)/2;
      cnv.position(newCanvasX,newCanvasY);
     song.loop();
     song.setVolume(0.3);
@@ -186,10 +196,12 @@ if (currentSketch === 1){
     console.log("This is sketch 5");
 
     //createCanvas(windowWidth, windowHeight);
-    cnv=createCanvas(600,400);
+    w+=55;
+    h += 55;
+    cnv=createCanvas(w,h);
     // print(img.width,img.height);
-    newCanvasX = (windowWidth - 600)/2;
-    newCanvasY = (windowHeight- 400)/2;
+    newCanvasX = (windowWidth - w)/2;
+    newCanvasY = (windowHeight- h)/2;
     cnv.position(newCanvasX,newCanvasY);
     
     for (let i = 0; i < 100; i++) { // Create 100 raindrops
@@ -305,6 +317,8 @@ function draw() {
   } else if (currentSketch == 5){
     //Sketch 5
     background(0);
+
+    //orbitControl();
   
     // Always update raindrops, but only show them if scroll isn't complete
     for (let drop of drops) {
