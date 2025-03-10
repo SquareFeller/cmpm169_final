@@ -37,7 +37,7 @@ let squareX, squareY;
 let dotsInsideSquare = [];
 
 let startTime;
-let sceneDuration = 15000; // 15 seconds in milliseconds
+let sceneDuration = 25000; // 25 seconds in milliseconds
 
 //for sketch 4 ________________
 let song;
@@ -166,6 +166,9 @@ if (currentSketch === 1){
      newCanvasY = (windowHeight- h)/2;
      cnv.position(newCanvasX,newCanvasY);
 
+    // Play background music
+    officeAmbience.loop();
+
     // Initialize the timer
     startTime = millis();
 
@@ -266,7 +269,8 @@ function draw() {
     // Check if 15 seconds have passed
     let elapsedTime = millis() - startTime;
     if (elapsedTime >= sceneDuration) {
-      // Trigger the scene change (this can be replaced with a new scene)
+      // Stop music and trigger the scene change (this can be replaced with a new scene)
+      officeAmbience.stop();
       currentSketch = 4;
       setup();
     }
@@ -285,9 +289,9 @@ function draw() {
     }
 
     // If the dot is inside the square and the user clicked, change its color to light grey
-    if (dotsInsideSquare[i]) {
+    if (dotsInsideSquare[i] && dots[i].color !== "lightgrey") {
       dots[i].color = "lightgrey";
-      //officeStampSound.play();
+      officeStampSound.play(); // Play sound whenever the color changes to lightgrey
     }
 
     // Draw the dot
