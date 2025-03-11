@@ -12,6 +12,7 @@ let initialX, initialY; // Store initial position
 let textOpacity = 255; // Text opacity
 let newCanvasX;
 let newCanvasY;
+let vol_increment = 0.05;
 
 //for sketch 2 _______________
 let busSound;
@@ -71,7 +72,7 @@ function preload() {
     busSound = loadSound('bus_sound.mp3'); // Replace with actual bus sound file
     song = loadSound('105265__carminooch__neighbors(louder).mp3');
     alarmSound = loadSound('alarm-clock.mp3');
-    thunderSound = loadSound('thunder.mp3');
+    thunderSound = loadSound('thunderSound.mp3');
     officeAmbience = loadSound('office-ambience.mp3');
     officeStampSound = loadSound('office-stamp.mp3');
 }
@@ -80,8 +81,6 @@ function preload() {
 function setup() {
 if (currentSketch === 1){
     // Sketch 1
-    console.log("This is sketch 1");
-    //createCanvas(400, 400);
     cnv=createCanvas(w,h);
     // print(img.width,img.height);
     newCanvasX = (windowWidth - w)/2;
@@ -105,19 +104,23 @@ if (currentSketch === 1){
     // **Create wake-up button but hide it initially**
     wakeUpButton = createButton('Wake Up');
     styleSmallButton(wakeUpButton);
-    wakeUpButton.position(startX + 12, startY + 80);
+    wakeUpButton.position(startX - 15, startY + 80);
     wakeUpButton.hide(); // Start hidden
     
     wakeUpButton.mousePressed(() => {
     console.log("Wake Up button clicked!");
     currentSketch = 2;
     //remove button
+    alarmSound.stop();
     wakeUpButton.remove();
     button.remove();
     setup();
     });
-
-  } else if (currentSketch === 2){
+  
+  alarmSound.setVolume(vol_increment);
+  alarmSound.loop();
+  alarmSound.play();
+} else if (currentSketch === 2){
     //Sketch 2
     console.log("This is sketch 2");
 
@@ -234,7 +237,14 @@ function draw() {
     textSize(70);
     textAlign(CENTER, CENTER);
     fill(255, 255, 255, textOpacity); // Control opacity
+    text(timerText, width / 2, height / 2 - 100);background(0); // Clear the canvas on each refresh
+
+    // **Draw text**
+    textSize(70);
+    textAlign(CENTER, CENTER);
+    fill(255, 255, 255, textOpacity); // Control opacity
     text(timerText, width / 2, height / 2 - 100);
+
   } else if (currentSketch == 2){
     //Sketch 2
     background(0); // Set background to black
@@ -446,140 +456,142 @@ function mousePressed() {
 
 // For sketch 1 ___________________________________
 function styleButton(btn) {
-    btn.style('font-size', '22px');
-    btn.style('padding', '15px 30px');
-    btn.style('border', 'none');
-    btn.style('border-radius', '25px');
-    btn.style('background', '#FFAF07');
-    btn.style('color', 'white');
-    btn.style('font-weight', 'bold');
-    btn.style('cursor', 'pointer');
-    btn.style('transition', 'opacity 0.3s ease');
+  btn.style('font-size', '22px');
+  btn.style('padding', '15px 30px');
+  btn.style('border', 'none');
+  btn.style('border-radius', '25px');
+  btn.style('background', '#FFAF07');
+  btn.style('color', 'white');
+  btn.style('font-weight', 'bold');
+  btn.style('cursor', 'pointer');
+  btn.style('transition', 'opacity 0.3s ease');
 }
 
 function styleSmallButton(btn) {
-    btn.style('font-size', '18px');
-    btn.style('padding', '10px 20px');
-    btn.style('border', 'none');
-    btn.style('border-radius', '15px');
-    btn.style('background', '#ff4747');
-    btn.style('color', 'white');
-    btn.style('font-weight', 'bold');
-    btn.style('cursor', 'pointer');
+  btn.style('font-size', '18px');
+  btn.style('padding', '10px 20px');
+  btn.style('border', 'none');
+  btn.style('border-radius', '15px');
+  btn.style('background', '#ff4747');
+  btn.style('color', 'white');
+  btn.style('font-weight', 'bold');
+  btn.style('cursor', 'pointer');
 }
 
 function positionButtonRandomly() {
-    let buttonWidth = 130;
-    let buttonHeight = 40;
+  let buttonWidth = 130;
+  let buttonHeight = 40;
 
-    let x = random(windowWidth - width, width + newCanvasX - buttonWidth - 10);
-    let y = random(height / 2, height + newCanvasY- buttonHeight - 20);
+  let x = random(windowWidth - width, width + newCanvasX - buttonWidth - 10);
+  let y = random(height / 2, height + newCanvasY- buttonHeight - 20);
 
-    button.position(x, y);
+  button.position(x, y);
 }
 
 function moveButton() {
-    if (moveCount < maxMoves && canMove) {
-        canMove = false;
-        moveCount++;
-        
-        fadeOutBoth(); // **Fade out both text and button simultaneously**
-        
-        setTimeout(() => {
-            canMove = true;
-        }, 1500);
-    }
+  if (moveCount < maxMoves && canMove) {
+      moveCount++;
+      alarmSound.setVolume(vol_increment += 0.2);
+  //  alarmSound.rate(vol_increment);
+      fadeOutBoth(); // **Fade out both text and button simultaneously**
+      
+      setTimeout(() => {
+          canMove = true;
+      }, 500);
+  }
 }
 
 function updateTime() {
-    let [hours, minutes] = timerText.split(":").map(Number);
-    minutes += 5;
-    if (minutes >= 60) {
-        minutes -= 60;
-        hours++;
-    }
-    timerText = `${hours}:${minutes.toString().padStart(2, "0")}`;
+  let [hours, minutes] = timerText.split(":").map(Number);
+  minutes += 5;
+  if (minutes >= 60) {
+      minutes -= 60;
+      hours++;
+  }
+  timerText = `${hours}:${minutes.toString().padStart(2, "0")}`;
 }
 
 // **Text fade-out effect**
 function fadeOutText() {
-    let fadeOutInterval = setInterval(() => {
-        textOpacity -= 25;
-        if (textOpacity <= 0) {
-            clearInterval(fadeOutInterval);
-            textOpacity = 0;
-            updateTime();
-            fadeOutAndMove();
-        }
-    }, 50);
+console.log("in fade out text");
+  let fadeOutInterval = setInterval(() => {
+      textOpacity -= 25;
+      if (textOpacity <= 0) {
+          clearInterval(fadeOutInterval);
+          textOpacity = 0;
+          updateTime();
+          fadeOutAndMove();
+      }
+  }, 50);
 }
 
 function fadeOutBoth() {
-    let textFadeOut = setInterval(() => {
-        textOpacity -= 25;
-        if (textOpacity <= 0) {
-            clearInterval(textFadeOut);
-            textOpacity = 0;
-            updateTime();
-        }
-    }, 50);
+console.log("in fade out both");
+  let textFadeOut = setInterval(() => {
+      textOpacity -= 25;
+      if (textOpacity <= 0) {
+          clearInterval(textFadeOut);
+          textOpacity = 0;
+          updateTime();
+      }
+  }, 25);
 
-    let buttonOpacity = 1;
-    let buttonFadeOut = setInterval(() => {
-        buttonOpacity -= 0.1;
-        button.style('opacity', buttonOpacity);
-        if (buttonOpacity <= 0) {
-            clearInterval(buttonFadeOut);
-            button.style('opacity', 0);
+  let buttonOpacity = 1;
+  let buttonFadeOut = setInterval(() => {
+      buttonOpacity -= 0.3;
+      button.style('opacity', buttonOpacity);
+      if (buttonOpacity <= 0) {
+          clearInterval(buttonFadeOut);
+          button.style('opacity', 0);
 
-            setTimeout(() => {
-                if (moveCount >= maxMoves) {
-                    button.position(initialX, initialY);
-                    wakeUpButton.show();
-                } else {
-                    positionButtonRandomly();
-                }
-                fadeInBoth();
-            }, 500);
-        }
-    }, 50);
+          setTimeout(() => {
+              if (moveCount >= maxMoves) {
+                  button.position(wakeUpButton.x - 15, initialY);
+                  wakeUpButton.show();
+              } else {
+                  positionButtonRandomly();
+              }
+              fadeInBoth();
+          }, 500);
+      }
+  }, 25);
 }
 
 function fadeInBoth() {
-    let textFadeIn = setInterval(() => {
-        textOpacity += 25;
-        if (textOpacity >= 255) {
-            clearInterval(textFadeIn);
-            textOpacity = 255;
-        }
-    }, 50);
+  let textFadeIn = setInterval(() => {
+      textOpacity += 25;
+      if (textOpacity >= 255) {
+          clearInterval(textFadeIn);
+          textOpacity = 255;
+      }
+  }, 50);
 
-    let buttonOpacity = 0;
-    button.style('opacity', buttonOpacity);
+  let buttonOpacity = 0;
+  button.style('opacity', buttonOpacity);
 
-    let buttonFadeIn = setInterval(() => {
-        buttonOpacity += 0.1;
-        button.style('opacity', buttonOpacity);
-        if (buttonOpacity >= 1) {
-            clearInterval(buttonFadeIn);
-        }
-    }, 50);
+  let buttonFadeIn = setInterval(() => {
+      buttonOpacity += 0.5;
+      button.style('opacity', buttonOpacity);
+      if (buttonOpacity >= 1) {
+          clearInterval(buttonFadeIn);
+      }
+  }, 50);
 
-    if (moveCount >= maxMoves) {
-        wakeUpButton.show();
-        let wakeUpOpacity = 0;
-        wakeUpButton.style('opacity', wakeUpOpacity);
+  if (moveCount >= maxMoves) {
+      wakeUpButton.show();
+    button.x = wakeUpButton.x;
+      let wakeUpOpacity = 0;
+      wakeUpButton.style('opacity', wakeUpOpacity);
 
-        let wakeUpFadeIn = setInterval(() => {
-            wakeUpOpacity += 0.1;
-            wakeUpButton.style('opacity', wakeUpOpacity);
-            if (wakeUpOpacity >= 1) {
-                clearInterval(wakeUpFadeIn);
-            }
-        }, 50);
-    }
+      let wakeUpFadeIn = setInterval(() => {
+          wakeUpOpacity += 0.1;
+          wakeUpButton.style('opacity', wakeUpOpacity);
+          if (wakeUpOpacity >= 1) {
+              clearInterval(wakeUpFadeIn);
+          }
+      }, 50);
+  }
 }
-
 // For sketch 2 ___________________________________
 function manageBusSound() {
   if (increasing) {
