@@ -46,14 +46,18 @@ let analyzer;
 let mouse_count = 0;
 
 //for sketch 5 ________________
-let drops = []; // Array to store raindrops
-let ripples = []; // Array to store ripple effects
+let drops = [];
+let ripples = [];
 let flash = false;
 let flashTimer = 0;
 let flashAlpha = 0;
-let blackout = 0; // Smooth transition variable (0 to 255 for fade effect)
-let scrollProgress = 0; // Track scroll progress for smooth transition
-let rippleTimer = 0; // Timer to control random ripple generation
+let scrollProgress = 0;
+let targetScrollProgress = 0;
+
+let scrollbarX, scrollbarY, scrollbarHeight, scrollbarWidth = 20, thumbY, thumbHeight = 100;
+let dragging = false;
+
+let rainSound, rainDropSound, thunderSound;
 
 //width & height 
 let w = 600;
@@ -61,7 +65,6 @@ let h = 400;
 
 //sounds
 let alarmSound;
-let thunderSound;
 let officeAmbience;
 let officeStampSound;
 
@@ -71,10 +74,14 @@ function preload() {
     soundFormats('mp3', 'wav');
     busSound = loadSound('bus_sound.mp3'); // Replace with actual bus sound file
     song = loadSound('105265__carminooch__neighbors(louder).mp3');
+  // for sketch 3
     alarmSound = loadSound('alarm-clock.mp3');
-    thunderSound = loadSound('thunderSound.mp3');
     officeAmbience = loadSound('office-ambience.mp3');
     officeStampSound = loadSound('office-stamp.mp3');
+  // for sketch 5
+    rainSound = loadSound('rainSound.mp3'); 
+    rainDropSound = loadSound('rainDrop.mp3'); 
+    thunderSound = loadSound('thunderSound.mp3'); // Load thunder sound
 }
 
 // SET UP _______________________________________________
@@ -212,7 +219,7 @@ if (currentSketch === 1){
     console.log("This is sketch 5");
 
     //createCanvas(windowWidth, windowHeight);
-    w+=105;
+    w += 105;
     h += 55;
     cnv=createCanvas(w,h);
     // print(img.width,img.height);
@@ -220,9 +227,19 @@ if (currentSketch === 1){
     newCanvasY = (windowHeight- h)/2;
     cnv.position(newCanvasX,newCanvasY);
     
-    for (let i = 0; i < 100; i++) { // Create 100 raindrops
+    scrollbarX = width - 40;
+    scrollbarY = 20;
+    scrollbarHeight = height - 40;
+    thumbY = scrollbarY;
+
+    for (let i = 0; i < 100; i++) {
       drops.push(new RainDrop());
     }
+
+    // Play the looping rain sound
+    rainSound.loop();
+    rainSound.setVolume(0.8);
+
   } else {
     console.log("error: currentSketch UNKNOWN");
   }
@@ -343,34 +360,40 @@ function draw() {
     //Sketch 5
     background(0);
 
-    //orbitControl();
+    // Smooth scroll effect
+    scrollProgress = lerp(scrollProgress, targetScrollProgress, 0.1);
+    
+    // Smooth thumb movement
+    thumbY = lerp(thumbY, map(scrollProgress, 0, 1, scrollbarY, scrollbarY + scrollbarHeight - thumbHeight), 0.2);
   
-    // Always update raindrops, but only show them if scroll isn't complete
+    // Adjust rain sound volume
+    let volume = map(scrollProgress, 0, 1, 1, 0.1); // Reduce volume as user scrolls down
+    rainSound.setVolume(constrain(volume, 0, 1));
+  
+    // Stop sound when fully scrolled down
+    if (scrollProgress >= 1) {
+      rainSound.stop();
+    } else if (!rainSound.isPlaying()) {
+      rainSound.loop(); // Restart if not playing
+    }
+  
     for (let drop of drops) {
       drop.fall();
       if (scrollProgress < 1) {
         drop.show();
       }
     }
-
-    // Draw and update ripples
-    for (let i = ripples.length - 1; i >= 0; i--) {
-      ripples[i].expand();
-      ripples[i].show();
-      if (ripples[i].alpha <= 0) {
-        ripples.splice(i, 1); // Remove faded ripples
-      }
-    }
-
-    // Randomly generate ripples on the blank canvas
-    if (scrollProgress >= 1 && random(1) < 0.02) { // Adjust probability for ripple generation
+  
+    // Generate ripples when fully scrolled
+    if (scrollProgress > 0.99 && random(1) < 0.02) { 
       let x = random(width);
       let y = random(height);
       ripples.push(new Ripple(x, y));
-      //console.log("Random ripple created at:", x, y); // Debugging
+  
+      // Play raindrop sound when ripple is generated
+      rainDropSound.play();
     }
-
-    // Handle lightning effect with fade in/out
+  
     if (flash) {
       flashAlpha = lerp(flashAlpha, 255, 0.1);
     } else {
@@ -378,25 +401,44 @@ function draw() {
     }
     fill(255, flashAlpha);
     rect(0, 0, width, height);
-
-    // Random chance of lightning (reduced frequency)
-    if (!flash && random(1) < 0.005) { // Lower probability for less frequent lightning
-      flash = true;
-      flashTimer = int(random(3, 8)); // Duration of flash effect
+  
+    if (!flash && random(1) < 0.005) {
+    flash = true;
+    flashTimer = int(random(3, 8));
+  
+    // Play thunder sound when lightning occurs
+    thunderSound.setVolume(4);
+    thunderSound.play();
     }
-
-    // Stop flash effect after timer expires
+  
     if (flashTimer > 0) {
       flashTimer--;
     } else {
       flash = false;
     }
-    
-    // Apply blackout fade effect based on scrollProgress
+  
     if (scrollProgress < 1) {
       fill(0, scrollProgress * 255);
       rect(0, 0, width, height);
     }
+    
+    for (let i = ripples.length - 1; i >= 0; i--) {
+      ripples[i].expand();
+      ripples[i].show();
+      if (ripples[i].alpha <= 0) {
+        ripples.splice(i, 1);
+      }
+    }
+  
+    // Draw scrollbar
+    fill(200);
+    noStroke();
+    rect(scrollbarX, scrollbarY, scrollbarWidth, scrollbarHeight, 10);
+  
+    // Draw thumb
+    fill(0);
+    rect(scrollbarX, thumbY, scrollbarWidth, thumbHeight, 10);
+
   } else {
     console.log("error: currentSketch UNKNOWN");
   }
@@ -447,8 +489,41 @@ function mousePressed() {
     // Sketch 4
   } else if (currentSketch === 5) {
     // Sketch 5
+    if (scrollProgress > 0.99) {
+      ripples.push(new Ripple(mouseX, mouseY));
+  
+      // Play raindrop sound when manually clicking to create ripples
+      rainDropSound.play();
+    }
+    if (mouseX > scrollbarX && mouseX < scrollbarX + scrollbarWidth &&
+        mouseY > thumbY && mouseY < thumbY + thumbHeight) {
+      dragging = true;
+    }
   } else {
     // Not Sketch 1-5
+  }
+}
+
+// MOUSE OTHER (for sketch 5) __________________________________________________
+function mouseReleased() {
+  if (currentSketch === 5){
+    dragging = false;
+  }
+}
+
+function mouseDragged() {
+  if (currentSketch === 5){
+    if (dragging) {
+      let newThumbY = constrain(mouseY, scrollbarY, scrollbarY + scrollbarHeight - thumbHeight);
+      targetScrollProgress = map(newThumbY, scrollbarY, scrollbarY + scrollbarHeight - thumbHeight, 0, 1);
+    }
+  }
+}
+
+// Smooth scroll wheel movement
+function mouseWheel(event) {
+  if (currentSketch === 5){
+    targetScrollProgress = constrain(targetScrollProgress + event.delta * 0.002, 0, 1);
   }
 }
 
@@ -594,6 +669,7 @@ function fadeInBoth() {
       }, 50);
   }
 }
+
 // For sketch 2 ___________________________________
 function manageBusSound() {
   if (increasing) {
@@ -674,8 +750,6 @@ class RainDrop {
     this.yspeed += grav;
 
     if (this.y > height) {
-      if (scrollProgress >= 0.99) { // Loosen the condition
-      }
       this.y = random(-20, 0);
       this.yspeed = map(this.z, 2, 8, 2, 10);
     }
@@ -706,9 +780,4 @@ class Ripple {
     stroke(255, this.alpha);
     ellipse(this.x, this.y, this.radius * 2);
   }
-}
-
-function mouseWheel(event) {
-  scrollProgress = constrain(scrollProgress + event.delta * 0.001, 0, 1); // Smooth scroll effect
-  console.log(scrollProgress);
 }
