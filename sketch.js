@@ -91,8 +91,8 @@ if (currentSketch === 1){
     styleButton(button);
     
     // **Set button position initially**
-    let startX = (width + newCanvasX) / 2; //- 70;
-    let startY = (height + newCanvasY) / 2;
+    let startX = (w + newCanvasX) / 2; //- 70;
+    let startY = (h + newCanvasY) / 2;
     button.position(startX, startY);
 
     // **Store initial position**
@@ -104,7 +104,7 @@ if (currentSketch === 1){
     // **Create wake-up button but hide it initially**
     wakeUpButton = createButton('Wake Up');
     styleSmallButton(wakeUpButton);
-    wakeUpButton.position(startX - 15, startY + 80);
+    wakeUpButton.position(w * 1.2, startY + 100);
     wakeUpButton.hide(); // Start hidden
     
     wakeUpButton.mousePressed(() => {
@@ -116,7 +116,7 @@ if (currentSketch === 1){
     button.remove();
     setup();
     });
-  
+
   alarmSound.setVolume(vol_increment);
   alarmSound.loop();
   alarmSound.play();
@@ -482,8 +482,8 @@ function positionButtonRandomly() {
   let buttonWidth = 130;
   let buttonHeight = 40;
 
-  let x = random(windowWidth - width, width + newCanvasX - buttonWidth - 10);
-  let y = random(height / 2, height + newCanvasY- buttonHeight - 20);
+  let x = random(windowWidth - w, w + newCanvasX - buttonWidth - 10) ;
+  let y = random(h / 2, h + newCanvasY- buttonHeight - 20) ;
 
   button.position(x, y);
 }
@@ -546,7 +546,9 @@ console.log("in fade out both");
 
           setTimeout(() => {
               if (moveCount >= maxMoves) {
-                  button.position(wakeUpButton.x - 15, initialY);
+                
+                  button.position(wakeUpButton.x - 15, wakeUpButton.y - 75);
+                  console.log(button.position());
                   wakeUpButton.show();
               } else {
                   positionButtonRandomly();
