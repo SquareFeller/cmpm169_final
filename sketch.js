@@ -1,6 +1,6 @@
 // DECLARATIONS _______________________________
 
-let currentSketch = 1;
+let currentSketch = 0;
 
 //for sketch 1 ________________
 let button, wakeUpButton;
@@ -86,7 +86,24 @@ function preload() {
 
 // SET UP _______________________________________________
 function setup() {
-if (currentSketch === 1){
+if(currentSketch === 0){
+  cnv=createCanvas(w,h);
+    // print(img.width,img.height);
+    newCanvasX = (windowWidth - w)/2;
+    newCanvasY = (windowHeight- h)/2;
+    cnv.position(newCanvasX,newCanvasY);
+    
+    startButton = createButton('Start');
+    //styleButton(button);
+    startButton.size(150, 50);
+    startButton.position(width * 1.15, height * 1.1);
+    startButton.style('font-size', '22px');
+    startButton.mousePressed(() => {
+      currentSketch = 1;
+      startButton.hide();
+      setup();
+    })
+}else if (currentSketch === 1){
     // Sketch 1
     cnv=createCanvas(w,h);
     // print(img.width,img.height);
@@ -111,7 +128,7 @@ if (currentSketch === 1){
     // **Create wake-up button but hide it initially**
     wakeUpButton = createButton('Wake Up');
     styleSmallButton(wakeUpButton);
-    wakeUpButton.position(w * 1.2, startY + 100);
+    wakeUpButton.position(w * 1.15, h*1.15);//startY + 100);
     wakeUpButton.hide(); // Start hidden
     
     wakeUpButton.mousePressed(() => {
@@ -247,7 +264,13 @@ if (currentSketch === 1){
 
 // DRAW __________________________________________________________
 function draw() {
-  if (currentSketch == 1){
+  if(currentSketch == 0){
+    background(0);
+    textSize(70);
+    textAlign(CENTER, CENTER);
+    fill(255, 255, 255, textOpacity); // Control opacity
+    text("In Their Shoes", width / 2, height / 2 - 100);  
+  }else if (currentSketch == 1){
     background(0); // Clear the canvas on each refresh
 
     // **Draw text**
