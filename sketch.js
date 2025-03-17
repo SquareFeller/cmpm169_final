@@ -91,7 +91,7 @@ if(currentSketch === 0){
     // print(img.width,img.height);
     newCanvasX = (windowWidth - w)/2;
     newCanvasY = (windowHeight- h)/2;
-    cnv.position(newCanvasX,newCanvasY);
+    cnv.position(newCanvasX,newCanvasY, 'fixed');
     
     // startButton = createButton('Start');
     // //styleButton(button);
@@ -115,9 +115,9 @@ if(currentSketch === 0){
     styleButton(button);
     
     // **Set button position initially**
-    let startX = (w + newCanvasX) / 2; //- 70;
-    let startY = (h + newCanvasY) / 2;
-    button.position(startX, startY);
+    let startX = width / 2 - 70;
+    let startY = height / 2;
+    button.position((newCanvasX + windowWidth) / 2.9, (newCanvasY + windowWidth) / 5.5 );//(startX, startY);
 
     // **Store initial position**
     initialX = startX;
@@ -128,8 +128,28 @@ if(currentSketch === 0){
     // **Create wake-up button but hide it initially**
     wakeUpButton = createButton('Wake Up');
     styleSmallButton(wakeUpButton);
-    wakeUpButton.position(w * 1.15, h*1.15);//startY + 100);
+    wakeUpButton.position((newCanvasX + windowWidth) / 2.85, (newCanvasY + windowWidth) / 4.5 );//(startX + 12, startY + 80);
     wakeUpButton.hide(); // Start hidden
+
+    // button = createButton('Snooze');
+    // styleButton(button);
+    
+    // // **Set button position initially**
+    // let startX = (w + newCanvasX) / 2; //- 70;
+    // let startY = (h + newCanvasY) / 2;
+    // button.position(startX, startY);
+
+    // // **Store initial position**
+    // initialX = startX;
+    // initialY = startY;
+
+    // button.mouseOver(moveButton);
+
+    // // **Create wake-up button but hide it initially**
+    // wakeUpButton = createButton('Wake Up');
+    // styleSmallButton(wakeUpButton);
+    // wakeUpButton.position(width/2, height/2 - 100); //(w * 1.15, h*1.15);//startY + 100);
+    // wakeUpButton.hide(); // Start hidden
     
     wakeUpButton.mousePressed(() => {
     console.log("Wake Up button clicked!");
