@@ -365,7 +365,7 @@ function draw() {
     } else if (scene === "bubbles") {
       background("white");
   
-      if (frameCount % 50 == 0) {
+      if (frameCount % 40 == 0) {
         let sentences = [
           "When will the next one get here?",
           "Will they be mad at me?",
@@ -385,7 +385,7 @@ function draw() {
         }
       }
   
-      if (frameCount % 500 == 0) {
+      if (frameCount % 600 == 0) {
         let specialSentence = "I should just walk...";
         specialBubble = new ThoughtBubble(random(width), height, specialSentence, true);
         bubbles.push(specialBubble);
