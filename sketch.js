@@ -93,16 +93,16 @@ if(currentSketch === 0){
     newCanvasY = (windowHeight- h)/2;
     cnv.position(newCanvasX,newCanvasY);
     
-    startButton = createButton('Start');
-    //styleButton(button);
-    startButton.size(150, 50);
-    startButton.position(width * 1.15, height * 1.1);
-    startButton.style('font-size', '22px');
-    startButton.mousePressed(() => {
-      currentSketch = 1;
-      startButton.hide();
-      setup();
-    })
+    // startButton = createButton('Start');
+    // //styleButton(button);
+    // startButton.size(150, 50);
+    // startButton.position(width * 1.15, height * 1.1);
+    // startButton.style('font-size', '22px');
+    // startButton.mousePressed(() => {
+      // currentSketch = 1;
+      // startButton.hide();
+      // setup();
+   // })
 }else if (currentSketch === 1){
     // Sketch 1
     cnv=createCanvas(w,h);
@@ -270,6 +270,11 @@ function draw() {
     textAlign(CENTER, CENTER);
     fill(255, 255, 255, textOpacity); // Control opacity
     text("In Their Shoes", width / 2, height / 2 - 100);  
+
+    textSize(30);
+    textAlign(CENTER, CENTER);
+    fill(255, 255, 255, textOpacity); // Control opacity
+    text("Click to Start", width / 2, height / 2 + 50);
   }else if (currentSketch == 1){
     background(0); // Clear the canvas on each refresh
 
@@ -469,7 +474,10 @@ function draw() {
 
 // MOUSE PRESS __________________________________________________
 function mousePressed() {
-  if (currentSketch === 1) {
+  if(currentSketch === 0){
+    currentSketch = 1;
+    setup();
+  }else if (currentSketch === 1) {
     // Sketch 1
   } else if (currentSketch === 2) {
     // Sketch 2
