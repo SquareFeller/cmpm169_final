@@ -1,138 +1,187 @@
-let busSound;
-let volume = 0;
-let increasing = true;
-let thoughtBubbles = [];
-let scene = 0;
-let correctBubble;
-let fadeAlpha = 0; // Controls the fade effect
-let isFading = false; // Indicates if the fade effect is active
+let bubbles = [];
+let specialBubble;
+let heartbeatSound, busSound;
+let scene = "bus"; // Start with bus scene
+let busDuration = 5000; // Bus sound lasts 5 seconds
+let fadeAlpha = 0; // For fading transition
+let fading = false; // Track if fading is happening
+let busSoundVolume = 1; // Volume of the bus sound
 
-// Array of predefined texts for the bubbles
-let bubbleTexts = [
-  "Go back?", "Oh....", "Bad day", "Hmm...", "No way...", "No!", "Why?", "How?", "What?"
-];
+// Rectangle (Bus) properties
+let busX = -1000; // Start further off-screen
+let busSpeed = 6; // Speed of the bus
+let busWidth = 1500; // Increased width
+let busHeight = 500; // Increased height
 
 function preload() {
-  soundFormats('mp3', 'wav');
-  busSound = loadSound('bus_sound.mp3'); // Replace with actual bus sound file
+  heartbeatSound = loadSound("heartbeat.mp3");
+  busSound = loadSound("bus_sound.mp3");
 }
 
 function setup() {
-  createCanvas(800, 600);
-  busSound.loop();
-  busSound.setVolume(0);
+  createCanvas(800, 600); // Larger canvas to fit bigger bus
+  textAlign(CENTER, CENTER);
 
-  // Create bubbles with even horizontal distribution
-  let cols = 7; // Number of columns for the grid
-  let spacingX = width / (cols + 1); // Horizontal spacing
-
-  for (let i = 0; i < cols; i++) {
-    let x = spacingX * (i + 1); // Calculate x position
-    let y = height; // Start at the bottom of the canvas
-
-    // Create two bubbles per column
-    for (let j = 0; j < 2; j++) {
-      let randomText = random(bubbleTexts); // Pick a random text from the array
-      let offsetY = j * 20; // Add a small vertical offset for the second bubble
-      thoughtBubbles.push(new ThoughtBubble(x, y + offsetY, randomText));
-    }
-  }
-
-  // Randomly select one bubble as the correct one
-  correctBubble = random(thoughtBubbles);
-  correctBubble.text = "Click Me!"; // Set the correct bubble's text
+  busSound.play();
+  busSound.setVolume(busSoundVolume);
+  setTimeout(() => {
+    fading = true; // Start fading transition
+  }, busDuration);
 }
 
 function draw() {
-  background(0); // Set background to black
+  if (scene === "bus") {
+    background(0);
 
-  if (scene === 0) {
-    manageBusSound();
-  } else if (scene === 1) {
-    for (let bubble of thoughtBubbles) {
-      bubble.update();
-      bubble.display();
+    // Move the rectangle (bus)
+    if (busX < width + busWidth) {
+      busX += busSpeed;
     }
-  } else if (scene === 2) {
-    // Fade to white effect
-    if (isFading) {
-      fadeAlpha += 2; // Increase the fade level
-      if (fadeAlpha >= 255) {
-        fadeAlpha = 255; // Clamp the fade level to 255
-        isFading = false; // Stop the fade effect
-        // Optionally, transition to another scene or perform other actions here
+
+    // Draw the moving rectangle (bus)
+    fill(219, 219, 219); // Yellow color for the bus
+    noStroke();
+    rect(busX, 220, busWidth, busHeight, 20); // Even bigger bus with rounded edges
+
+    // Bus windows
+    fill(155, 186, 213);
+    rect(busX + 100, 250, 250, 190, 5);
+    rect(busX + 400, 250, 250, 190, 5);
+    rect(busX + 700, 250, 250, 190, 5);
+    rect(busX + 1000, 250, 250, 190, 5);
+    rect(busX + 1300, 250, 195, 190, 5);
+
+    // Wheels
+    fill(50);
+    ellipse(busX + 350, 600, 200, 200);
+    ellipse(busX + 1200, 600, 200, 200);
+    
+    fill(105, 105, 105);
+    ellipse(busX + 350, 600, 130, 130);
+    ellipse(busX + 1200, 600, 130, 130);
+    
+    //light
+    fill(255, 255, 188);
+    rect(busX + 1450, 500, 50, 50);
+    
+    //engine
+    fill(192, 192, 190);
+    rect(busX + 40, 455, 180, 130, 5);
+    
+    //tail light
+    fill(182, 101, 101);
+    rect(busX, 455, 20, 100, 5);
+    
+    //ad
+    fill(148, 182, 109);
+    rect(busX + 500, 465, 500, 100, 5);
+
+    // Gradual fade to white after bus leaves
+    if (fading) {
+      fadeAlpha += 5;
+      busSoundVolume -= 0.02; // Reduce the volume gradually
+      busSound.setVolume(busSoundVolume);
+
+      if (fadeAlpha >= 255 || busSoundVolume <= 0) {
+        fadeAlpha = 255;
+        busSoundVolume = 0;
+        busSound.stop();
+        fading = false;
+        scene = "bubbles";
+        heartbeatSound.loop();
+      }
+      fill(255, fadeAlpha);
+      rect(0, 0, width, height);
+    }
+  } else if (scene === "bubbles") {
+    background("white");
+
+    if (frameCount % 50 == 0) {
+      let sentences = [
+        "When will the next one get here?",
+        "Will they be mad at me?",
+        "Not again!",
+        "Should I wait for the next one?",
+        "I can't be late again?",
+        "I ran all the way here for nothing!",
+        "I'm going to be late",
+        "Why does this always happen to me!",
+        "What do I do now?",
+      ];
+
+      let numberOfBubbles = int(random(2, 3));
+      for (let i = 0; i < numberOfBubbles; i++) {
+        let newBubble = new ThoughtBubble(random(width), height, random(sentences), false);
+        bubbles.push(newBubble);
       }
     }
-    fill(255, fadeAlpha); // White with increasing alpha
-    noStroke();
-    rect(0, 0, width, height); // Cover the entire canvas
-  }
-}
 
-function manageBusSound() {
-  if (increasing) {
-    volume += 0.01;
-    if (volume >= 1) increasing = false;
-  } else {
-    volume -= 0.01;
-    if (volume <= 0) {
-      busSound.stop();
-      scene = 1;
+    if (frameCount % 500 == 0) {
+      let specialSentence = "I should just walk...";
+      specialBubble = new ThoughtBubble(random(width), height, specialSentence, true);
+      bubbles.push(specialBubble);
+    }
+
+    for (let i = bubbles.length - 1; i >= 0; i--) {
+      bubbles[i].update();
+      bubbles[i].display();
+      if (bubbles[i].y < 0) {
+        bubbles.splice(i, 1);
+      }
     }
   }
-  busSound.setVolume(constrain(volume, 0, 1));
 }
 
 class ThoughtBubble {
-  constructor(x, y, text) {
-    this.size = random(80, 100); // Random size between 80 and 100
+  constructor(x, y, text, isSpecial) {
     this.x = x;
     this.y = y;
     this.text = text;
-    this.speed = random(1, 3);
+    this.isSpecial = isSpecial;
+    this.size = this.calculateBubbleSize();
+    this.speed = random(1, 2);
+    this.alpha = 255;
   }
 
   update() {
-    this.y -= this.speed; // Move the bubble upward
-    if (this.y < -this.size) {
-      this.y = height; // Reset to the bottom if the bubble goes off the top
-    }
+    this.y -= this.speed;
+    this.alpha -= 0.5;
+    if (this.alpha < 0) this.alpha = 0;
+  }
+
+  calculateBubbleSize() {
+    let padding = 15;
+    let textWidthValue = textWidth(this.text);
+    return max(textWidthValue + padding, 80);
   }
 
   display() {
-    fill(255); // White fill for bubbles
-    stroke(200); // Light gray stroke for bubbles
-    ellipse(this.x, this.y, this.size, this.size); // Use the random size
-
-    // Adjust text size based on bubble size
-    let textSizeValue = map(this.size, 80, 100, 14, 18); // Map size to text size
-    textSize(textSizeValue);
-
-    fill(0); // Black text for visibility
-    noStroke();
-    textAlign(CENTER, CENTER);
+    if (this.isSpecial) {
+      fill("gray");
+    } else {
+      fill(255, 255, 255, this.alpha);
+      stroke(0);
+    }
+    ellipse(this.x, this.y, this.size, this.size / 2);
+    fill(0, this.alpha);
+    textSize(12);
     text(this.text, this.x, this.y);
   }
 
-  isHovered() {
-    // Check if the mouse is within the bubble's radius
-    return dist(mouseX, mouseY, this.x, this.y) < this.size / 2;
+  isClicked() {
+    let distance = dist(mouseX, mouseY, this.x, this.y);
+    return distance < this.size / 2;
   }
 }
 
 function mousePressed() {
-  if (scene === 1) {
-    for (let i = 0; i < thoughtBubbles.length; i++) {
-      let bubble = thoughtBubbles[i];
-      if (bubble.isHovered()) {
-        if (bubble === correctBubble) {
-          scene = 2;
-          isFading = true; // Start the fade effect
-          console.log("correct button");
-        }
-        thoughtBubbles.splice(i, 1); // Remove the clicked bubble
-        break;
+  for (let i = bubbles.length - 1; i >= 0; i--) {
+    if (bubbles[i].isClicked()) {
+      if (bubbles[i].isSpecial) {
+        console.log("clicked special thought");
       }
+      bubbles.splice(i, 1);
+      break;
     }
   }
 }
