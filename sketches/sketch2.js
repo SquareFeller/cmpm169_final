@@ -8,10 +8,10 @@ let fading = false; // Track if fading is happening
 let busSoundVolume = 1; // Volume of the bus sound
 
 // Rectangle (Bus) properties
-let busX = -1000; // Start further off-screen
-let busSpeed = 6; // Speed of the bus
-let busWidth = 1500; // Increased width
-let busHeight = 500; // Increased height
+let busX = -600; // Start further off-screen
+let busSpeed = 4; // Speed of the bus
+let busWidth = 800; // Increased width
+let busHeight = 240; // Increased height
 
 function preload() {
   heartbeatSound = loadSound("heartbeat.mp3");
@@ -19,7 +19,7 @@ function preload() {
 }
 
 function setup() {
-  createCanvas(800, 600); // Larger canvas to fit bigger bus
+  createCanvas(655, 455); // Larger canvas to fit bigger bus
   textAlign(CENTER, CENTER);
 
   busSound.play();
@@ -39,42 +39,43 @@ function draw() {
     }
 
     // Draw the moving rectangle (bus)
-    fill(219, 219, 219); // Yellow color for the bus
+    fill(219, 219, 219); //color for the bus
     noStroke();
     rect(busX, 220, busWidth, busHeight, 20); // Even bigger bus with rounded edges
 
     // Bus windows
     fill(155, 186, 213);
-    rect(busX + 100, 250, 250, 190, 5);
-    rect(busX + 400, 250, 250, 190, 5);
-    rect(busX + 700, 250, 250, 190, 5);
-    rect(busX + 1000, 250, 250, 190, 5);
-    rect(busX + 1300, 250, 195, 190, 5);
+    rect(busX + 70, 250, 120, 90, 5);
+    rect(busX + 220, 250, 120, 90, 5);
+    rect(busX + 370, 250, 120, 90, 5);
+    rect(busX + 520, 250, 120, 90, 5);
+    rect(busX + 670, 250, 130, 90, 5);
+
 
     // Wheels
     fill(50);
-    ellipse(busX + 350, 600, 200, 200);
-    ellipse(busX + 1200, 600, 200, 200);
+    ellipse(busX + 200, 450, 150, 150);
+    ellipse(busX + 620, 450, 150, 150);
     
     fill(105, 105, 105);
-    ellipse(busX + 350, 600, 130, 130);
-    ellipse(busX + 1200, 600, 130, 130);
+    ellipse(busX + 200, 450, 100, 100);
+    ellipse(busX + 620, 450, 100, 100);
     
     //light
     fill(255, 255, 188);
-    rect(busX + 1450, 500, 50, 50);
+    rect(busX + 760, 350, 40, 40);
     
-    //engine
+    /*engine
     fill(192, 192, 190);
-    rect(busX + 40, 455, 180, 130, 5);
+    rect(busX + 40, 455, 180, 130, 5);*/
     
     //tail light
     fill(182, 101, 101);
-    rect(busX, 455, 20, 100, 5);
+    rect(busX, 330, 20, 70, 5);
     
     //ad
     fill(148, 182, 109);
-    rect(busX + 500, 465, 500, 100, 5);
+    rect(busX + 290, 370, 230, 60, 5);
 
     // Gradual fade to white after bus leaves
     if (fading) {
