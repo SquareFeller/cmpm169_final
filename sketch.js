@@ -479,6 +479,7 @@ function draw() {
     // Adjust rain sound volume
     let volume = map(scrollProgress, 0, 1, 1, 0.1); // Reduce volume as user scrolls down
     rainSound.setVolume(constrain(volume, 0, 1));
+    thunderSound.setVolume(constrain(volume, 0, 1));
   
     // Stop sound when fully scrolled down
     if (scrollProgress >= 1) {
