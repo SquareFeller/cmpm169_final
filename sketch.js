@@ -123,7 +123,7 @@ if(currentSketch === 0){
     styleButton(button);
    // button.position((newCanvasX + w) / 2 - button.width, cnv.height);
    let mult = ((newCanvasX + w / 2) / newCanvasX);
-    button.position((newCanvasX * mult) - button.size().width / 2, (newCanvasY + h) / 2); //- button.height); 
+    button.position((newCanvasX * mult) - button.size().width / 2, (newCanvasY + h) / 1.4); //- button.height); 
     
     // **Set button position initially**
     let startX = width / 2 - 70;
