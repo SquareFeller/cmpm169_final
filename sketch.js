@@ -112,16 +112,30 @@ if(currentSketch === 0){
     // print(img.width,img.height);
     newCanvasX = (windowWidth - w)/2;
     newCanvasY = (windowHeight- h)/2;
+    print(newCanvasX, newCanvasY);
+    //print((newCanvasX + w) / 2 - button.width); //- button.);
     cnv.position(newCanvasX,newCanvasY);
+    //print(cnv.position());
+   // newWidth = newCanvasX + w;
+    //print(newWidth);
     
     button = createButton('Snooze');
     styleButton(button);
+   // button.position((newCanvasX + w) / 2 - button.width, cnv.height);
+   let mult = ((newCanvasX + w / 2) / newCanvasX);
+    button.position((newCanvasX * mult) - button.size().width / 2, (newCanvasY + h) / 2); //- button.height); 
     
     // **Set button position initially**
     let startX = width / 2 - 70;
     let startY = height / 2;
-    button.position((newCanvasX + windowWidth) / 2.9, (newCanvasY + windowWidth) / 5.5 );//(startX, startY);
-
+   // button.position((newCanvasX + windowWidth) / 2.9, (newCanvasY + windowWidth) / 5.5 );//(startX, startY);
+    //button.center('horizontal');
+   // button.center();
+  //   //button.position(574, windowHeight/2);
+  //   print(button.x);
+  //   button.y = windowHeight;
+  //   print(button.y);//(newCanvasY + windowWidth); /// 5.5;
+  //  // button.position()
     // **Store initial position**
     initialX = startX;
     initialY = startY;
@@ -131,7 +145,9 @@ if(currentSketch === 0){
     // **Create wake-up button but hide it initially**
     wakeUpButton = createButton('Wake Up');
     styleSmallButton(wakeUpButton);
-    wakeUpButton.position((newCanvasX + windowWidth) / 2.85, (newCanvasY + windowWidth) / 4.5 );//(startX + 12, startY + 80);
+    wakeUpButton.position((newCanvasX * mult) - wakeUpButton.size().width / 2, (newCanvasY + h) / 1.4);
+    //wakeUpButton.position((newCanvasX + windowWidth) / 2.85, (newCanvasY + windowWidth) / 4.5 );//(startX + 12, startY + 80);
+    //wakeUpButton.center();
     wakeUpButton.hide(); // Start hidden
 
     // button = createButton('Snooze');
